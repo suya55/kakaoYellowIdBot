@@ -1,15 +1,16 @@
 name := """mybot"""
 
-version := "1.0-SNAPSHOT"
+version := "1.1"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
+  "org.jsoup" % "jsoup" % "1.8.3",
   specs2 % Test
 )
 

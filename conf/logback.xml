@@ -1,22 +1,35 @@
 <configuration>
-    
-  <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%coloredLevel - %logger - %message%n%xException</pattern>
-    </encoder>
-  </appender>
+    <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel"/>
 
-  <!--
-    The logger name is typically the Java/Scala package name.
-    This configures the log level to log at for a package and its children packages.
-  -->
-  <logger name="play" level="INFO" />
-  <logger name="application" level="DEBUG" />
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${application.home}/logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Daily rollover with compression -->
+            <fileNamePattern>application.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>%coloredLevel %date{ISO8601} [%thread] %logger{35} - %msg %n</Pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%coloredLevel - %logger - %message%n%xException</pattern>
+        </encoder>
+    </appender>
 
-  <root level="ERROR">
-    <appender-ref ref="STDOUT" />
-  </root>
+    <!--
+      The logger name is typically the Java/Scala package name.
+      This configures the log level to log at for a package and its children packages.
+    -->
+    <logger name="play" level="INFO"/>
+    <logger name="application" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE" />
+    </root>
 
 </configuration>
