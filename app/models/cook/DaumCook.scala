@@ -28,13 +28,14 @@ object DaumCook {
             "http://m.cook.miznet.daum.net/ranking/hitrecipe/rankingRecipeList?rankType=5",
             "http://m.cook.miznet.daum.net/ranking/hitrecipe/rankingRecipeList?rankType=6",
             "http://m.cook.miznet.daum.net/calendar/list?type=D",
-            s"http://m.cook.miznet.daum.net/search?q=${cal.get(Calendar.DAY_OF_MONTH)}%EC%9B%94",
+            s"http://m.cook.miznet.daum.net/search?q=${cal.get(Calendar.MONTH)}%EC%9B%94",
             "http://m.cook.miznet.daum.net/ranking/bestrecipe/rankingRecipeList?rankType=1&datekey=1"
         )
-
-        val doc = HtmlParser.get(Random.shuffle(links).last)
+        val url = Random.shuffle(links).last
+        val doc = HtmlParser.get(url)
         val list = HtmlParser.linkSequence(doc,"cook/recipe/read")
-        val idx:Int = Random.shuffle(0 to list.size-1).last
+        Logger.info(s"url : ${url} , result size : ${list.size}")
+        val idx:Int = Random.shuffle(0 to list.size-1).toSeq.last
         val images = doc.body.toString.split("\n").filter(_.indexOf("Rank.addUrl") > 0)
         val selected = list(idx)
         val src = images.size match {
