@@ -3,10 +3,10 @@
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${application.home}/logs/application.log</file>
+        <file>logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- Daily rollover with compression -->
-            <fileNamePattern>application.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>logs/application.log.%d{yyyy-MM-dd}</fileNamePattern>
             <!-- keep 30 days worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
@@ -20,14 +20,19 @@
         </encoder>
     </appender>
 
-    <!--
-      The logger name is typically the Java/Scala package name.
-      This configures the log level to log at for a package and its children packages.
-    -->
+    <logger name="slick.compiler" level="OFF"/>
+    <logger name="slick.relational.ResultConverterCompiler" level="OFF"/>
+    <logger name="com.google.inject.internal" level="OFF"/>
+    <logger name="com.zaxxer.hikari.HikariConfig" level="OFF"/>
+    <logger name="org.hibernate.SQL" level="INFO"/>
+    <logger name="org.hibernate.type" level="INFO"/>
+    <logger name="scala.slick.jdbc.JdbcBackend.statement" level="INFO"/>
+    <logger name="scala.slick.jdbc.StatementInvoker.result" level="DEBUG"/>
+    <logger name="play.core.server.netty.PlayDefaultUpstreamHandler" level="OFF" />
     <logger name="play" level="INFO"/>
     <logger name="application" level="DEBUG"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE" />
     </root>
