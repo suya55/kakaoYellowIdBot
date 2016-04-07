@@ -1,20 +1,24 @@
 package controllers.bracken
 
-import controllers.ApiController
-import models.cook.DaumCook
-import models.{KeyboardType, Keyboard, Message, UserMessage}
+import javax.inject.Inject
+
+import controllers.Actions
+import models.store.StepAction
+import models.{Message, UserMessage}
 import play.api.libs.json.Json
-import play.api.mvc.BodyParsers
-import service.store.{UserStepService, StepService}
+import play.api.libs.ws.WSClient
+import play.api.mvc.{BodyParsers, Controller}
+import service.store.UserStepService
+import utils.Slick
 
 
-object BrackenController extends ApiController{
-    lazy val initKeyboard = StepService.getInitKeyboard
+class BrackenController @Inject() (ws: WSClient)  extends Controller with Actions with Slick{
+    def getInitKeyboard = StepAction.getFirstSteps.getKeyboard
 
     def message = userAction(BodyParsers.parse.json) { implicit request =>
         val (message,keyboard) = request.body.validate[UserMessage].fold(
             errors => {
-                (Message("잘못된 입력입니다"), initKeyboard)
+                (Message("잘못된 입력입니다"), getInitKeyboard)
             },
             userMessage => {
                 UserStepService.processStep(request.userStep, userMessage.content)
@@ -24,7 +28,7 @@ object BrackenController extends ApiController{
         Ok(Json.obj("message" -> Json.toJson(message), "keyboard" -> Json.toJson(keyboard)))
     }
 
-    override def keyboard = userAction {
-        Ok(Json.toJson(initKeyboard))
+    def keyboard = LoggingAction {
+        Ok(Json.toJson(getInitKeyboard))
     }
 }

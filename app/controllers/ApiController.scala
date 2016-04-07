@@ -1,10 +1,9 @@
 package controllers
 
-import models.cook.DaumCook
-import models.{KeyboardType, Keyboard}
-import play.api.mvc.{BodyParsers, Controller}
+import play.api.mvc.Controller
+import utils.Slick
 
-trait ApiController extends Controller with Actions{
+trait ApiController extends Controller with Actions with Slick{
     def message
     def keyboard
 }

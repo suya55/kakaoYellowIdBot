@@ -7,9 +7,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-case class Product(id: Int,
+case class Product(id: Option[Int],
                    name: String,
-                   imageSrc: String,
+                   imageSrc: Option[String],
                    description: String,
                    remainCount: Int,
                    price: Int,
@@ -28,7 +28,7 @@ class Products(tag: Tag) extends Table[Product](tag, "product") with ExtMapper {
 
     def imageSrc = column[String]("image_src")
 
-    def description = column[String]("name")
+    def description = column[String]("description")
 
     def remainCount = column[Int]("remain_count")
 
@@ -44,12 +44,13 @@ class Products(tag: Tag) extends Table[Product](tag, "product") with ExtMapper {
 
     def updatedAt = column[Date]("update_at")
 
-    def * = (id, name, imageSrc, description, remainCount, price, status, startAt.?, endAt.?, createdAt.?, updatedAt.?) <>(Product.tupled, Product.unapply)
+    def * = (id.?, name, imageSrc.?, description, remainCount, price, status, startAt.?, endAt.?, createdAt.?, updatedAt.?) <>(Product.tupled, Product.unapply)
 
     def idx = index("idx_product_name", name, unique = false)
 }
 
 object ProductAction extends TableQuery(new Products(_)) with Slick {
+
 
     val STATUS_PREPARED = "PREPARED"
     val STATUS_ON_SALE = "SALE"
@@ -57,6 +58,10 @@ object ProductAction extends TableQuery(new Products(_)) with Slick {
     val STATUS_STOP = "STOP"
 
     def findByName(name: String): Product = Await.result(db.run(ProductAction.filter(_.name === name).result.head), duration)
+
+    def findById(id: Int): Product = Await.result(db.run(ProductAction.filter(_.id === id).result.head), duration)
+
+    def create(product:Product) = db.run((this returning this.map(_.id)) += product)
 
     def getProductNames(): Seq[String] = {
         val sql = sql"SELECT `name` FROM product WHERE status = 'SALE' AND now() BETWEEN ifnull(start_at,now()) AND ifnull(end_at,now()) ".as[String]

@@ -4,9 +4,6 @@ import base.SpecBase
 
 import scala.concurrent.Await
 
-/**
-  * Created by suya55 on 4/5/16.
-  */
 class OrdersAction$Test extends SpecBase {
 
     "OrdersAction$Test" should {

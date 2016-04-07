@@ -1,6 +1,7 @@
 package controllers.cook
 
-import controllers.Actions
+import com.google.inject.Singleton
+import controllers.{Actions, ApiController}
 import models.cook.DaumCook
 import models.{Keyboard, KeyboardType, Message, UserMessage}
 import play.api.libs.json.Json

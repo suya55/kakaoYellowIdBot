@@ -1,6 +1,7 @@
 package models.store
 
 import java.sql.Date
+import play.api.Logger
 import slick.driver.MySQLDriver.api._
 import utils.{Slick, ExtMapper}
 

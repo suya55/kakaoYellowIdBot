@@ -22,12 +22,13 @@
 
     <logger name="slick.compiler" level="OFF"/>
     <logger name="slick.relational.ResultConverterCompiler" level="OFF"/>
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF"/>
     <logger name="com.google.inject.internal" level="OFF"/>
     <logger name="com.zaxxer.hikari.HikariConfig" level="OFF"/>
-    <logger name="org.hibernate.SQL" level="INFO"/>
-    <logger name="org.hibernate.type" level="INFO"/>
-    <logger name="scala.slick.jdbc.JdbcBackend.statement" level="INFO"/>
-    <logger name="scala.slick.jdbc.StatementInvoker.result" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="OFF"/>
+    <logger name="org.hibernate.type" level="OFF"/>
+    <logger name="scala.slick.jdbc.JdbcBackend.statement" level="DEBUG"/>
+    <logger name="scala.slick.jdbc.StatementInvoker.result" level="OFF"/>
     <logger name="play.core.server.netty.PlayDefaultUpstreamHandler" level="OFF" />
     <logger name="play" level="INFO"/>
     <logger name="application" level="DEBUG"/>

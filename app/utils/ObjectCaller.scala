@@ -18,6 +18,11 @@ trait ObjectCaller {
         objMirror.reflectMethod(method)(parameter).asInstanceOf[T]
     }
 
+    def callMethod[T](objName: String, methodName: String): T = {
+        val (objMirror, method) = getObjMirror(objName,methodName)
+        objMirror.reflectMethod(method)().asInstanceOf[T]
+    }
+
     protected def getObjMirror(objName:String, methodName:String) ={
         val m = ru.runtimeMirror(getClass.getClassLoader)
         val module = m.staticModule(s"service.store.${objName}")

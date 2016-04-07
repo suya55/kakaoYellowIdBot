@@ -23,6 +23,7 @@ trait Actions {
         def transform[A](request: Request[A]) = Future.successful {
             val jsBody = jsonBody(request.body).get
             val userKey:String = (jsBody\"user_key").as[String]
+            Logger.info("user_key : "+userKey)
             val userStep = UserStepAction.findOrCreateByUserKey(userKey)
             UserStepRequest(userKey, userStep, request)
         }

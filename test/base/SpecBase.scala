@@ -1,12 +1,13 @@
 package base
 
-import models.store.{UserStepAction, StepAction, ProductAction, OrdersAction}
+import models.store.{OrdersAction, ProductAction, UserStepAction}
 import org.specs2.mock.Mockito
 import org.specs2.specification.{BeforeAfterAll, BeforeAfterEach}
-import play.api.{Application, Logger}
 import play.api.test.{FakeApplication, PlaySpecification}
-import utils.Slick
+import play.api.{Application, Logger}
 import slick.driver.MySQLDriver.api._
+import utils.Slick
+
 import scala.concurrent.Await
 
 trait SpecBase extends PlaySpecification with Mockito with BeforeAfterEach with BeforeAfterAll with Slick{
@@ -25,7 +26,6 @@ trait SpecBase extends PlaySpecification with Mockito with BeforeAfterEach with 
                 DBIO.seq(
                     OrdersAction.delete,
                     ProductAction.delete,
-//                    StepAction.delete,
                     UserStepAction.delete
                 )
             ),duration)

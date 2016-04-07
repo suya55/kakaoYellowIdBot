@@ -1,6 +1,7 @@
 package models.store
 
 import models.{KeyboardType, Keyboard}
+import play.api.Logger
 import slick.driver.MySQLDriver.api._
 
 import slick.lifted.TableQuery
@@ -11,7 +12,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class Step(id: Int,
+case class Step(id: Option[Int] = None,
                 actionMethod: Option[String],
                 message: String,
                 keyboardType: String,
@@ -21,12 +22,32 @@ case class Step(id: Int,
                 errorMessage: Option[String],
                 errorStep: Option[Int]
                ) {
+    var userKey:String = null
+    def setUserKey(uk:String) : Step = {
+        this.userKey = uk
+        this
+    }
+    lazy val inputMessages: String = StepAction.convertInputMessage(userKey,inputMessage)
+    lazy val convertedTargetStepIds: List[Int] = {
+        var retList: List[Int] = List[Int]()
+        inputMessage.split("\\|").zip(targetStepIds).map { m =>
+            Logger.debug("===============3333333333333 >>"+userKey)
 
-    lazy val inputMessages: String = StepAction.convertInputMessage(inputMessage)
-    val getKeyboard: Keyboard = {
+            val retVal = StepAction.convertInputMessage(userKey,m._1)
+            if(null != retVal){
+                for (tmp <- retVal.split("\\|")) {
+                    retList = retList ::: List(m._2.toInt)
+                }
+            }
+        }
+        Logger.debug("===============555555555555555555555555 >>")
+
+        retList
+    }
+    lazy val getKeyboard: Keyboard = {
         Keyboard(KeyboardType.withName(keyboardType), keyboardType match {
             case "text" => None
-            case _ => Option(StepAction.convertInputMessage(inputMessage).split("|"))
+            case _ => Option(StepAction.convertInputMessage(userKey,inputMessage).split("\\|").filter(_.nonEmpty))
         })
     }
 }
@@ -50,22 +71,41 @@ class Steps(tag: Tag) extends Table[Step](tag, "step") with ExtMapper {
 
     def errorStep = column[Int]("error_step")
 
-    def * = (id, actionMethod.?, message, keyboardType, inputMessage, targetStepIds, isDefault, errorMessage.?, errorStep.?) <>(Step.tupled, Step.unapply)
+    def * = (id.?, actionMethod.?, message, keyboardType, inputMessage, targetStepIds, isDefault, errorMessage.?, errorStep.?) <>(Step.tupled, Step.unapply)
 }
 
 
 object StepAction extends TableQuery(new Steps(_)) with Slick {
-    val reg = "\\#\\{(.+)\\.(.+)\\}".r
+    val reg = "\\#\\{([a-zA-Z]+)\\.([a-zA-Z]+)\\}".r
+
+    def create(step: Step) = db.run((this returning this.map(_.id) += step))
 
     def getFirstSteps = Await.result(db.run(this.filter(_.isDefault === true).result.head), duration)
 
     def findById(id: Int) = Await.result(db.run(this.filter(_.id === id).result.head), duration)
 
-    def convertInputMessage(ip: String): String = {
-        if (reg.findFirstIn(ip).isDefined) {
-            convertInputMessage(reg.replaceFirstIn(ip, ObjectCaller.callMethod[String]("$1", "$2", null)))
+    def convertInputMessage(userKey:String, inputMessage: String): String = {
+        val findResult = reg.findFirstIn(inputMessage)
+        if (findResult.isDefined) {
+            val matcher = reg.findAllMatchIn(inputMessage).next()
+            val obj = matcher.group(1)
+            val method = matcher.group(2)
+            Logger.debug(s"######### $userKey $inputMessage $obj $method")
+            convertInputMessage(userKey, reg.replaceFirstIn(inputMessage, ObjectCaller.callMethod[String](obj, method,userKey,inputMessage)))
         } else {
-            ip
+            inputMessage
+        }
+    }
+
+    def convertMessage(userKey: String, inputMessage: String, msg: String): String = {
+        val findResult = reg.findFirstIn(msg)
+        if (findResult.isDefined) {
+            val matcher = reg.findAllMatchIn(msg).next()
+            val obj = matcher.group(1)
+            val method = matcher.group(2)
+            convertMessage(userKey, inputMessage, reg.replaceFirstIn(msg, MessageMethodCaller.callMethod[String](obj, method, inputMessage, userKey).toString))
+        } else {
+            msg
         }
     }
 
@@ -74,8 +114,12 @@ object StepAction extends TableQuery(new Steps(_)) with Slick {
             case KeyboardType.text =>
                 findById(step.targetStepIds.head.toInt)
             case _ => {
-                val idx = step.inputMessages.split("|").indexOf(msg)
-                findById(step.targetStepIds(idx).toInt)
+                Logger.debug("===============111111111111 >>"+step.userKey)
+
+                val idx = step.inputMessages.split("\\|").indexOf(msg)
+                Logger.debug("===============2222222222 >>"+step.userKey)
+
+                findById(step.convertedTargetStepIds(idx))
             }
         }
     }
