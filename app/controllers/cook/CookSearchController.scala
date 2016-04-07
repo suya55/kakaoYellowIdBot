@@ -1,21 +1,14 @@
 package controllers.cook
 
-import java.util.concurrent.TimeUnit
-
-import controllers.Actions
+import com.google.inject.Singleton
+import controllers.{Actions, ApiController}
 import models.cook.DaumCook
-import models.{UserMessage, Keyboard, KeyboardType, Message}
-import play.api.Play.current
+import models.{Keyboard, KeyboardType, Message, UserMessage}
 import play.api.libs.json.Json
-import play.api.libs.json.JsArray
-import play.api.libs.ws.WS
 import play.api.mvc._
+import utils.Slick
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
-
-class CookSearchController extends Controller with Actions{
+class CookSearchController extends Controller with Actions with Slick{
 
   def message = LoggingAction(BodyParsers.parse.json) { implicit request =>
     val (message,keyboard) = request.body.validate[UserMessage].fold(
