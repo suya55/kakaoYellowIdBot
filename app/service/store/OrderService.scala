@@ -65,12 +65,15 @@ object OrderService {
 //    }
 
     def getOrderDetail(userKey:String, input:String):String ={
+        val deliverPrice = 2500
+
         val order:Order = OrdersAction.findById(input.toInt)
         val product :Product = ProductAction.findById(order.productId)
         s"""
            |상품명 : ${product.name}
            |수량 : ${order.orderCount.get}개
-           |단가 : ${product.price}
+           |단가 : ${Utils.currencyFormat(product.price)}
+           |
            |총 주문금액 : ${Utils.currencyFormat(order.totalPrice.get)}원
            |배송지 : ${order.receiverAddress.get}
            |받으시는분 : ${order.receiverName.get}
@@ -102,11 +105,16 @@ object OrderService {
         if(order.isEmpty) {
             throw new ServiceException("잘못된 주문번호입니다.")
         }
-        val totalPrice = (order.get.product.price*order.get.orderCount.get)
+        val p = (order.get.product.price*order.get.orderCount.get)
+        val deliverPrice = if(p >= 30000) { 0 } else { 2500 }
+        val totalPrice = p+deliverPrice
         Await.result(OrdersAction.updateField(userKey, "total_price", totalPrice),Slick.duration)
         s"""
           |주문번호는 [${order.get.id.get}]입니다.
+          |
           |총주문금액은 ${Utils.currencyFormat(totalPrice)}원입니다.
+          |배송료는 ${Utils.currencyFormat(deliverPrice)} 원입니다.
+          |
           |주문을 완료하시겠습니까?
         """.stripMargin
     }
@@ -122,11 +130,11 @@ object OrderService {
             ,("전화번호",order.receiverPhone.getOrElse(""))
             ,("배송요청사항",order.deliverMessage.getOrElse(""))
             ,("수량",order.orderCount.getOrElse(0).toString)
-            ,("주문금액",order.totalPrice.getOrElse(0).toString)
+            ,("주문금액",Utils.currencyFormat(order.totalPrice.getOrElse(0)))
             ,("입금자명",order.payer.getOrElse(""))
             ,("상태",OrdersAction.getReadableStatus(order.status))
             ,("user_key",order.userKey)).get().map{ res =>
-//            Logger.info("GoogleDocs call : "+res.body.toString)
+            Logger.info("GoogleDocs call : "+res.body.toString)
             res.body
         }
 

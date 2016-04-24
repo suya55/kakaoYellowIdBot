@@ -10,8 +10,6 @@ object ProductService {
            |[${product.name}]
            |<img>${product.imageSrc.get}</img>
            |${product.description}
-           |남은 갯수 : ${product.remainCount}개
-           |가격 : ${product.price}
          """.stripMargin
     }
 }

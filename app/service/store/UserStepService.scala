@@ -12,15 +12,11 @@ object UserStepService {
         val oldStep = StepAction.findById(userStep.stepId).setUserKey(userStep.userKey)
 
         val reg = new Regex(oldStep.inputMessages)
-        Logger.debug(s"---------- oldstep inputMessage : ${oldStep.inputMessages} / inputMessage : ${inputMessage} / val : ${reg.findFirstIn(inputMessage).isEmpty}")
         if (reg.findFirstIn(inputMessage).isEmpty) {
-            Logger.debug("================ 잘못된입력")
             UserStepAction.update(userStep.userKey, oldStep.errorStep.get, inputMessage)
             throw new BadRequestException(oldStep.errorMessage.getOrElse("잘못된 입력입니다."), StepAction.findById(oldStep.errorStep.get).setUserKey(userStep.userKey).getKeyboard)
         }
-        Logger.debug("===============1 >>"+oldStep.userKey)
         val nextStep: Step = StepAction.getNextStep(oldStep, inputMessage).setUserKey(userStep.userKey)
-        Logger.debug("===============2")
         if (nextStep.actionMethod.isDefined && !nextStep.actionMethod.get.isEmpty) {
             val am = nextStep.actionMethod.get.split(",")
             if (am.length > 1) {
@@ -29,7 +25,6 @@ object UserStepService {
                 ActionMethodCaller.callMethod(am.head.split("\\.").head, am.head.split("\\.").last, null, inputMessage, userStep.userKey)
             }
         }
-        Logger.debug("===============3")
         UserStepAction.update(userStep.userKey, nextStep.id.get, inputMessage)
         val msg = StepAction.convertMessage(userStep.userKey, inputMessage, nextStep.message)
         val imgPattern = "\\<img\\>(.+)\\<\\/img\\>".r
