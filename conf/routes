@@ -5,6 +5,8 @@
 # Home page
 GET      /cook/keyboard                           controllers.cook.CookSearchController.keyboard
 POST     /cook/message                            controllers.cook.CookSearchController.message
+GET      /flower/keyboard                           controllers.flower.FlowerSearchController.keyboard
+POST     /flower/message                            controllers.flower.FlowerSearchController.message
 GET      /bracken/keyboard                        controllers.bracken.BrackenController.keyboard
 POST     /bracken/message                         controllers.bracken.BrackenController.message
 
