@@ -12,11 +12,5 @@ class Flower$Test extends SpecBase {
             Logger.debug(Flower.searchImg("http://img1.daumcdn.net/thumb/R120x0/?fname=http://t1.beta.daumcdn.net/daisy/flowers/0.jpg"))
             ok
         }
-
-        "search " in {
-            Logger.debug(Flower.search("개나리"))
-            ok
-        }
-
     }
 }

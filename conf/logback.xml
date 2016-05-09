@@ -20,16 +20,16 @@
         </encoder>
     </appender>
 
-    <logger name="slick.compiler" level="OFF"/>
-    <logger name="slick.relational.ResultConverterCompiler" level="OFF"/>
-    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF"/>
-    <logger name="com.google.inject.internal" level="OFF"/>
-    <logger name="com.zaxxer.hikari.HikariConfig" level="OFF"/>
-    <logger name="org.hibernate.SQL" level="OFF"/>
-    <logger name="org.hibernate.type" level="OFF"/>
+    <logger name="slick.compiler" level="DEBUG"/>
+    <logger name="slick.relational.ResultConverterCompiler" level="DEBUG"/>
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="DEBUG"/>
+    <logger name="com.google.inject.internal" level="DEBUG"/>
+    <logger name="com.zaxxer.hikari.HikariConfig" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type" level="DEBUG"/>
     <logger name="scala.slick.jdbc.JdbcBackend.statement" level="DEBUG"/>
-    <logger name="scala.slick.jdbc.StatementInvoker.result" level="OFF"/>
-    <logger name="play.core.server.netty.PlayDefaultUpstreamHandler" level="OFF" />
+    <logger name="scala.slick.jdbc.StatementInvoker.result" level="DEBUG"/>
+    <logger name="play.core.server.netty.PlayDefaultUpstreamHandler" level="DEBUG" />
     <logger name="play" level="INFO"/>
     <logger name="application" level="DEBUG"/>
 

@@ -31,8 +31,6 @@ case class Step(id: Option[Int] = None,
     lazy val convertedTargetStepIds: List[Int] = {
         var retList: List[Int] = List[Int]()
         inputMessage.split("\\|").zip(targetStepIds).map { m =>
-            Logger.debug("===============3333333333333 >>"+userKey)
-
             val retVal = StepAction.convertInputMessage(userKey,m._1)
             if(null != retVal){
                 for (tmp <- retVal.split("\\|")) {
@@ -40,7 +38,6 @@ case class Step(id: Option[Int] = None,
                 }
             }
         }
-        Logger.debug("===============555555555555555555555555 >>")
 
         retList
     }
@@ -114,10 +111,7 @@ object StepAction extends TableQuery(new Steps(_)) with Slick {
             case KeyboardType.text =>
                 findById(step.targetStepIds.head.toInt)
             case _ => {
-                Logger.debug("===============111111111111 >>"+step.userKey)
-
                 val idx = step.inputMessages.split("\\|").indexOf(msg)
-                Logger.debug("===============2222222222 >>"+step.userKey)
 
                 findById(step.convertedTargetStepIds(idx))
             }
